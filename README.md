@@ -86,13 +86,14 @@ Now, let's get the application's source code.
     git clone https://github.com/YOUR-USERNAME/resume-alignment-ai-service.git
     ```
 
-3.  **Switch to the `start` Branch**
-    * This is the most important step. The `start` branch contains only the application code, which is our clean starting point for this lab.
+3.  **Switch to the `feature/devops-local-lab` Branch**
+    * This is the most important step. The `feature/devops-local-lab` branch contains only the application code, which is our clean starting point for this lab.
 
     ```powershell
     cd resume-alignment-ai-service
-    git checkout start
+    git checkout feature/devops-local-lab
     ```
+    > NOTE: There is another branch named "feature/local-cicd-pipeline" which is the one I used to create this lab. You can use it as a guide too.
 
 Your workshop is now ready! You have all the tools and the initial code. In the next task, we'll solve our first problem: making the application portable.
 
@@ -418,7 +419,7 @@ name: Local Lab CI/CD Pipeline
 on:
   push:
     branches:
-      - 'feature/local-cicd-pipeline'
+      - 'feature/devops-local-lab'
 
 jobs:
   build-and-deploy:
@@ -484,7 +485,7 @@ jobs:
     ```powershell
     git add .
     git commit -m "Feat: Implement best-practice CI/CD pipeline"
-    git push origin feature/local-cicd-pipeline
+    git push origin feature/devops-local-lab
     ```
 
 4.  **Watch the Magic:**
