@@ -1,21 +1,49 @@
+# Specifies the version of the Docker Compose file format. Using a specific version like '3.9'
+# ensures consistent behavior and access to modern features.
 version: '3.9'
 
+# The top-level key for defining all the containers (services) that make up our application.
 services:
+  # 'app' is the custom name we are giving our primary service.
   app:
+    # Instead of pulling a pre-existing image, this tells Docker Compose to build
+    # the image for this service from a Dockerfile.
     build:
+      # 'context' specifies the build directory. '.' means the current directory
+      # where this docker-compose.yml file is located.
       context: .
+      # Specifies the name of the Dockerfile to use for the build.
       dockerfile: Dockerfile
-    # Map host port to container port
+    # The 'ports' section maps ports from the host machine to the container.
     ports:
+        # Maps the port specified by the HOST_PORT variable on your computer (the host)
+        # to the port specified by the PORT variable inside the container.
+        # These variables are typically defined in a .env file.
       - "${HOST_PORT}:${PORT}"
-    # Pass environment variables to the container
+    # The 'environment' section defines environment variables that will be set inside the container.
     environment:
+        # Passes the value of OPENAI_API_KEY from your .env file or shell into the container.
+        # This is the secure way to handle secrets during local development.
       - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - PORT=${PORT}  # Internal container port
+        # Passes the value of PORT from your .env file into the container.
+        # This overrides any default PORT set in the Dockerfile, ensuring consistency.
+      - PORT=${PORT}
+    # Defines the restart policy for the container. 'unless-stopped' means the container will
+    # automatically restart if it crashes or if the Docker daemon restarts, but not if it was
+    # manually stopped by the user. This provides resilience during development.
     restart: unless-stopped
-    # Healthcheck to ensure FastAPI is running
+    # The 'healthcheck' configures a command to run inside the container to verify that
+    # the application is not just running, but is actually healthy and responsive.
     healthcheck:
+      # 'test' is the actual command to run. ["CMD", "curl", "-f", ...] is the recommended format.
+      # `curl -f` will exit with an error code if the HTTP response is an error (e.g., 404, 500),
+      # which is how Docker determines if the check failed.
       test: ["CMD", "curl", "-f", "http://localhost:${PORT}/health"]
+      # 'interval' specifies the time to wait between running the health check (e.g., every 30 seconds).
       interval: 30s
+      # 'timeout' specifies how long to wait for the health check command to return a response
+      # before considering it a failure.
       timeout: 5s
+      # 'retries' is the number of consecutive failures needed before the container is
+      # marked as "unhealthy".
       retries: 3
